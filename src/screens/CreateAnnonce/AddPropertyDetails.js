@@ -1,0 +1,337 @@
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  TextInput,
+  Button,
+  Alert,
+  ScrollView,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { Picker } from "@react-native-picker/picker";
+
+export default function AddPropertyDetailsScreen({ navigation, route }) {
+  const { description, images, adresse, ville, superficie, prix, type, status, nbChambres, nbSallesDeBain, mesureSon, mesureCO2 } = route.params;
+  const [etage, setEtage] = useState("");
+  const [avecAscenceur, setAscenceur] = useState("");
+  const [nbEtages, setNbEtages] = useState("");
+  const [avecGarage, setAvecGarage] = useState("");
+  const [avecSousSol, setAvecSousSol] = useState("");
+  const [surfaceJardin, setSurfaceJardin] = useState("");
+  const [avecPiscine, setAvecPiscine] = useState("");
+
+  const handleSubmit = () => {
+    const propertyDetails = {
+      description,
+      images,
+      property: {
+      adresse,
+      ville,
+      superficie,
+      prix,
+      type,
+      status,
+      nbChambres,
+      nbSallesDeBain,
+      mesureSon,
+      mesureCO2,
+      // etage: type === "Appartement" ? etage : undefined,
+      // avecAscenceur: type === "Appartement" ? avecAscenceur : undefined,
+      // nbEtages: type !== "Appartement" ? nbEtages : undefined,
+      // avecGarage: type !== "Appartement" ? avecGarage : undefined,
+      // avecSousSol: type === "Maison" ? avecSousSol : undefined,
+      // surfaceJardin: type === "Villa" ? surfaceJardin : undefined,
+      // avecPiscine: type === "Villa" ? avecPiscine : undefined,
+      },
+    };
+
+    console.log(propertyDetails);
+
+    fetch("http://localhost:3000", {
+      method: "POST",
+      headers: {
+      "Content-Type": "application/json",
+      },
+      body: JSON.stringify(propertyDetails),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+      Alert.alert("Succès", "Annonce créée avec succès");
+      navigation.goBack();
+      })
+      .catch((error) => {
+      Alert.alert("Erreur", "Une erreur s'est produite lors de la création de l'annonce");
+      console.error("Error:", error);
+      });
+  };
+
+  return (
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.title}>Création d'une Annonce</Text>
+      <Text style={styles.subtitle}>Détails de la Propriété</Text>
+
+      {type === "Appartement" && (
+        <>
+          <View style={styles.inputContainer}>
+            <View style={styles.inputWrapper}>
+              <TextInput
+                placeholder="Etage"
+                style={styles.inputField}
+                value={etage}
+                onChangeText={setEtage}
+                keyboardType="numeric"
+                onBlur={() => {
+                  if (!Number.isInteger(Number(etage))) {
+                    setEtage("");
+                  }
+                }}
+              />
+            </View>
+            {!Number.isInteger(Number(etage)) && etage !== "" && (
+              <Text style={styles.errorText}>
+                Veuillez entrer un nombre entier pour l'étage.
+              </Text>
+            )}
+          </View>
+          <View style={styles.inputContainer}>
+            <View style={styles.checkboxWrapper}>
+              <Text>Avec Ascenseur</Text>
+              <TouchableOpacity
+                style={styles.checkboxContainer}
+                onPress={() => setAscenceur(!avecAscenceur)}
+              >
+                <Ionicons
+                  name={avecAscenceur ? "checkbox" : "square-outline"}
+                  size={24}
+                  color="black"
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </>
+      )}
+
+      {type === "Maison" && (
+        <>
+          <View style={styles.inputContainer}>
+            <View style={styles.inputWrapper}>
+              <TextInput
+                placeholder="Nombre d'Étages"
+                style={styles.inputField}
+                value={nbEtages}
+                onChangeText={setNbEtages}
+                keyboardType="numeric"
+                onBlur={() => {
+                    if (!Number.isInteger(Number(nbEtages))) {
+                      setNbEtages("");
+                    }
+                  }}
+                />
+              </View>
+              {!Number.isInteger(Number(nbEtages)) && nbEtages !== "" && (
+                <Text style={styles.errorText}>
+                  Veuillez entrer un nombre entier pour le nombre d'étages.
+                </Text>
+              )}
+          </View>
+          <View style={styles.inputContainer}>
+            <View style={styles.checkboxWrapper}>
+              <Text>Avec Garage</Text>
+              <TouchableOpacity
+                style={styles.checkboxContainer}
+                onPress={() => setAvecGarage(!avecGarage)}
+              >
+                <Ionicons
+                  name={avecGarage ? "checkbox" : "square-outline"}
+                  size={24}
+                  color="black"
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View style={styles.inputContainer}>
+            <View style={styles.checkboxWrapper}>
+              <Text>Avec Sous-Sol</Text>
+              <TouchableOpacity
+                style={styles.checkboxContainer}
+                onPress={() => setAvecSousSol(!avecSousSol)}
+              >
+                <Ionicons
+                  name={avecSousSol ? "checkbox" : "square-outline"}
+                  size={24}
+                  color="black"
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </>
+      )}
+
+      {type === "Villa" && (
+        <>
+          <View style={styles.inputContainer}>
+            <View style={styles.inputWrapper}>
+              <TextInput
+                placeholder="Nombre d'Étages"
+                style={styles.inputField}
+                value={nbEtages}
+                onChangeText={setNbEtages}
+                keyboardType="numeric"
+                onBlur={() => {
+                    if (!Number.isInteger(Number(nbEtages))) {
+                      setNbEtages("");
+                    }
+                  }}
+                />
+              </View>
+              {!Number.isInteger(Number(nbEtages)) && nbEtages !== "" && (
+                <Text style={styles.errorText}>
+                  Veuillez entrer un nombre entier pour le nombre d'étages.
+                </Text>
+              )}
+          </View>
+          <View style={styles.inputContainer}>
+            <View style={styles.inputWrapper}>
+              <TextInput
+                placeholder="Surface du Jardin"
+                style={styles.inputField}
+                value={surfaceJardin}
+                onChangeText={setSurfaceJardin}
+                keyboardType="numeric"
+              />
+              <Text style={styles.unitText}>m²</Text>
+            </View>
+          </View>
+          <View style={styles.inputContainer}>
+            <View style={styles.checkboxWrapper}>
+              <Text>Avec Garage</Text>
+              <TouchableOpacity
+                style={styles.checkboxContainer}
+                onPress={() => setAvecGarage(!avecGarage)}
+              >
+                <Ionicons
+                  name={avecGarage ? "checkbox" : "square-outline"}
+                  size={24}
+                  color="black"
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View style={styles.inputContainer}>
+            <View style={styles.checkboxWrapper}>
+              <Text>Avec Piscine</Text>
+              <TouchableOpacity
+                style={styles.checkboxContainer}
+                onPress={() => setAvecPiscine(!avecPiscine)}
+              >
+                <Ionicons
+                  name={avecPiscine ? "checkbox" : "square-outline"}
+                  size={24}
+                  color="black"
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </>
+      )}
+
+      <View style={styles.buttonContainer}>
+        <Button
+          title="Créer l'Annonce"
+          color="#4CAF50"
+          onPress={handleSubmit}
+        />
+      </View>
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flexGrow: 1,
+    backgroundColor: "white",
+    padding: 20,
+    justifyContent: "center",
+  },
+  image: {
+    width: "100%",
+    height: 200,
+    marginBottom: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 10,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: "gray",
+    textAlign: "center",
+    marginBottom: 20,
+  },
+  unitText: {
+    fontSize: 16,
+    color: "gray",
+  },
+  errorText: {
+    color: "red",
+    fontSize: 12,
+    marginTop: 5,
+  },
+  inputContainer: {
+    marginBottom: 15,
+  },
+  checkboxContainer: {
+    marginLeft: "auto",
+  },
+  inputWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#f0f0f0",
+    borderRadius: 10,
+    paddingLeft: 10,
+    paddingRight: 10,
+  },
+  checkboxWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 10,
+    marginRight: 10,
+  },
+  icon: {
+    marginRight: 10,
+  },
+  inputField: {
+    flex: 1,
+    height: 50,
+    fontSize: 16,
+  },
+  forgotPassword: {
+    alignSelf: "flex-end",
+    marginBottom: 20,
+  },
+  forgotPasswordText: {
+    color: "#4CAF50",
+  },
+  buttonContainer: {
+    marginBottom: 20,
+    borderRadius: 10,
+    overflow: "hidden",
+  },
+  registerContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+  },
+  registerText: {
+    color: "gray",
+  },
+  registerLink: {
+    color: "#4CAF50",
+    fontWeight: "bold",
+  },
+});
