@@ -9,9 +9,8 @@ import AddPropertyScreen from "./screens/CreateAnnonce/AddProperty";
 import AddPropertyDetailsScreen from "./screens/CreateAnnonce/AddPropertyDetails";
 import ListAnnonces from "./screens/SearchAnnonces/ListAnnonces";
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import { StyleSheet } from "react-native";
-import { View, Text, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import Mapview from "./Mapview";
 
 const Stack = createStackNavigator();
 
@@ -33,6 +32,7 @@ function DrawerMenu() {
       <Drawer.Screen name="Accueil" component={HomeScreen} />
       <Drawer.Screen name="Ajouter une Annonce" component={AddAnnonceScreen} />
       <Drawer.Screen name="Liste des Annonces" component={ListAnnonces} />
+      <Drawer.Screen name="Map" component={Mapview} />
       <Drawer.Screen
         name="Se déconnecter"
         component={() => {

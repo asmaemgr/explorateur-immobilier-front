@@ -11,7 +11,7 @@ import {
   ScrollView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { Picker } from "@react-native-picker/picker";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function AddPropertyDetailsScreen({ navigation, route }) {
   const { description, images, adresse, ville, superficie, prix, type, status, nbChambres, nbSallesDeBain, mesureSon, mesureCO2 } = route.params;
@@ -22,6 +22,15 @@ export default function AddPropertyDetailsScreen({ navigation, route }) {
   const [avecSousSol, setAvecSousSol] = useState("");
   const [surfaceJardin, setSurfaceJardin] = useState("");
   const [avecPiscine, setAvecPiscine] = useState("");
+
+  const dispatch = useDispatch();
+  const isLoggedIn = useSelector((state) => state.auth);
+
+  // useEffect(() => {
+  //   if (!isLoggedIn) {
+  //     navigation.navigate("Login");
+  //   }
+  // }, [isLoggedIn, navigation]);
 
   const handleSubmit = () => {
     const propertyDetails = {
@@ -50,22 +59,8 @@ export default function AddPropertyDetailsScreen({ navigation, route }) {
 
     console.log(propertyDetails);
 
-    fetch("http://localhost:3000", {
-      method: "POST",
-      headers: {
-      "Content-Type": "application/json",
-      },
-      body: JSON.stringify(propertyDetails),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-      Alert.alert("Succès", "Annonce créée avec succès");
-      navigation.goBack();
-      })
-      .catch((error) => {
-      Alert.alert("Erreur", "Une erreur s'est produite lors de la création de l'annonce");
-      console.error("Error:", error);
-      });
+    dispatch(addAnnonce(propertyDetails));
+
   };
 
   return (
