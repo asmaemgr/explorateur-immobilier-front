@@ -4,17 +4,29 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Image,
-  TextInput,
-  Button,
-  Alert,
   ScrollView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import TextInputC from "../../components/TextInputC";
 import { useDispatch, useSelector } from "react-redux";
+import { addAnnonce } from "../../redux/Actions/actions";
+import ButtonC from "../../components/ButtonC";
 
 export default function AddPropertyDetailsScreen({ navigation, route }) {
-  const { description, images, adresse, ville, superficie, prix, type, status, nbChambres, nbSallesDeBain, mesureSon, mesureCO2 } = route.params;
+  const {
+    description,
+    images,
+    adresse,
+    ville,
+    superficie,
+    prix,
+    type,
+    status,
+    nbChambres,
+    nbSallesDeBain,
+    mesureSon,
+    mesureCO2,
+  } = route.params;
   const [etage, setEtage] = useState("");
   const [avecAscenceur, setAscenceur] = useState("");
   const [nbEtages, setNbEtages] = useState("");
@@ -37,23 +49,23 @@ export default function AddPropertyDetailsScreen({ navigation, route }) {
       description,
       images,
       property: {
-      adresse,
-      ville,
-      superficie,
-      prix,
-      type,
-      status,
-      nbChambres,
-      nbSallesDeBain,
-      mesureSon,
-      mesureCO2,
-      // etage: type === "Appartement" ? etage : undefined,
-      // avecAscenceur: type === "Appartement" ? avecAscenceur : undefined,
-      // nbEtages: type !== "Appartement" ? nbEtages : undefined,
-      // avecGarage: type !== "Appartement" ? avecGarage : undefined,
-      // avecSousSol: type === "Maison" ? avecSousSol : undefined,
-      // surfaceJardin: type === "Villa" ? surfaceJardin : undefined,
-      // avecPiscine: type === "Villa" ? avecPiscine : undefined,
+        adresse,
+        ville,
+        superficie,
+        prix,
+        type,
+        status,
+        nbChambres,
+        nbSallesDeBain,
+        mesureSon,
+        mesureCO2,
+        // etage: type === "Appartement" ? etage : undefined,
+        // avecAscenceur: type === "Appartement" ? avecAscenceur : undefined,
+        // nbEtages: type !== "Appartement" ? nbEtages : undefined,
+        // avecGarage: type !== "Appartement" ? avecGarage : undefined,
+        // avecSousSol: type === "Maison" ? avecSousSol : undefined,
+        // surfaceJardin: type === "Villa" ? surfaceJardin : undefined,
+        // avecPiscine: type === "Villa" ? avecPiscine : undefined,
       },
     };
 
@@ -61,6 +73,7 @@ export default function AddPropertyDetailsScreen({ navigation, route }) {
 
     dispatch(addAnnonce(propertyDetails));
 
+    navigation.navigate("Home");
   };
 
   return (
@@ -70,27 +83,27 @@ export default function AddPropertyDetailsScreen({ navigation, route }) {
 
       {type === "Appartement" && (
         <>
-          <View style={styles.inputContainer}>
-            <View style={styles.inputWrapper}>
-              <TextInput
-                placeholder="Etage"
-                style={styles.inputField}
-                value={etage}
-                onChangeText={setEtage}
-                keyboardType="numeric"
-                onBlur={() => {
-                  if (!Number.isInteger(Number(etage))) {
-                    setEtage("");
-                  }
-                }}
-              />
-            </View>
+          <View>
+            <TextInputC
+              placeholder="Etage"
+              setValue={setEtage}
+              value={etage}
+              iconName="layers-outline"
+              style={styles.inputField}
+              keyboardType="numeric"
+              onBlur={() => {
+                if (!Number.isInteger(Number(etage))) {
+                  setEtage("");
+                }
+              }}
+            />
             {!Number.isInteger(Number(etage)) && etage !== "" && (
               <Text style={styles.errorText}>
                 Veuillez entrer un nombre entier pour l'étage.
               </Text>
             )}
           </View>
+
           <View style={styles.inputContainer}>
             <View style={styles.checkboxWrapper}>
               <Text>Avec Ascenseur</Text>
@@ -111,26 +124,25 @@ export default function AddPropertyDetailsScreen({ navigation, route }) {
 
       {type === "Maison" && (
         <>
-          <View style={styles.inputContainer}>
-            <View style={styles.inputWrapper}>
-              <TextInput
-                placeholder="Nombre d'Étages"
-                style={styles.inputField}
-                value={nbEtages}
-                onChangeText={setNbEtages}
-                keyboardType="numeric"
-                onBlur={() => {
-                    if (!Number.isInteger(Number(nbEtages))) {
-                      setNbEtages("");
-                    }
-                  }}
-                />
-              </View>
-              {!Number.isInteger(Number(nbEtages)) && nbEtages !== "" && (
-                <Text style={styles.errorText}>
-                  Veuillez entrer un nombre entier pour le nombre d'étages.
-                </Text>
-              )}
+          <View>
+            <TextInputC
+              placeholder="Nombre d'Étages"
+              style={styles.inputField}
+              setValue={setNbEtages}
+              value={nbEtages}
+              iconName="layers-outline"
+              keyboardType="numeric"
+              onBlur={() => {
+                if (!Number.isInteger(Number(nbEtages))) {
+                  setNbEtages("");
+                }
+              }}
+            />
+            {!Number.isInteger(Number(nbEtages)) && nbEtages !== "" && (
+              <Text style={styles.errorText}>
+                Veuillez entrer un nombre entier pour le nombre d'étages.
+              </Text>
+            )}
           </View>
           <View style={styles.inputContainer}>
             <View style={styles.checkboxWrapper}>
@@ -167,39 +179,35 @@ export default function AddPropertyDetailsScreen({ navigation, route }) {
 
       {type === "Villa" && (
         <>
-          <View style={styles.inputContainer}>
-            <View style={styles.inputWrapper}>
-              <TextInput
-                placeholder="Nombre d'Étages"
-                style={styles.inputField}
-                value={nbEtages}
-                onChangeText={setNbEtages}
-                keyboardType="numeric"
-                onBlur={() => {
-                    if (!Number.isInteger(Number(nbEtages))) {
-                      setNbEtages("");
-                    }
-                  }}
-                />
-              </View>
-              {!Number.isInteger(Number(nbEtages)) && nbEtages !== "" && (
-                <Text style={styles.errorText}>
-                  Veuillez entrer un nombre entier pour le nombre d'étages.
-                </Text>
-              )}
+          <View>
+            <TextInputC
+              placeholder="Nombre d'Étages"
+              style={styles.inputField}
+              setValue={setNbEtages}
+              value={nbEtages}
+              iconName="layers-outline"
+              keyboardType="numeric"
+              onBlur={() => {
+                if (!Number.isInteger(Number(nbEtages))) {
+                  setNbEtages("");
+                }
+              }}
+            />
+            {!Number.isInteger(Number(nbEtages)) && nbEtages !== "" && (
+              <Text style={styles.errorText}>
+                Veuillez entrer un nombre entier pour le nombre d'étages.
+              </Text>
+            )}
           </View>
-          <View style={styles.inputContainer}>
-            <View style={styles.inputWrapper}>
-              <TextInput
-                placeholder="Surface du Jardin"
-                style={styles.inputField}
-                value={surfaceJardin}
-                onChangeText={setSurfaceJardin}
-                keyboardType="numeric"
-              />
-              <Text style={styles.unitText}>m²</Text>
-            </View>
-          </View>
+          <TextInputC
+            placeholder="Surface du Jardin"
+            style={styles.inputField}
+            value={surfaceJardin}
+            setValue={setSurfaceJardin}
+            keyboardType="numeric"
+            iconName="leaf-outline"
+            unit="m²"
+          />
           <View style={styles.inputContainer}>
             <View style={styles.checkboxWrapper}>
               <Text>Avec Garage</Text>
@@ -233,28 +241,17 @@ export default function AddPropertyDetailsScreen({ navigation, route }) {
         </>
       )}
 
-      <View style={styles.buttonContainer}>
-        <Button
-          title="Créer l'Annonce"
-          color="#4CAF50"
-          onPress={handleSubmit}
-        />
-      </View>
+      <ButtonC title="Créer l'Annonce" color="#4CAF50" onPress={handleSubmit} />
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
+    flex: 1,
     backgroundColor: "white",
     padding: 20,
     justifyContent: "center",
-  },
-  image: {
-    width: "100%",
-    height: 200,
-    marginBottom: 20,
   },
   title: {
     fontSize: 24,
@@ -267,10 +264,6 @@ const styles = StyleSheet.create({
     color: "gray",
     textAlign: "center",
     marginBottom: 20,
-  },
-  unitText: {
-    fontSize: 16,
-    color: "gray",
   },
   errorText: {
     color: "red",
@@ -305,28 +298,5 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 50,
     fontSize: 16,
-  },
-  forgotPassword: {
-    alignSelf: "flex-end",
-    marginBottom: 20,
-  },
-  forgotPasswordText: {
-    color: "#4CAF50",
-  },
-  buttonContainer: {
-    marginBottom: 20,
-    borderRadius: 10,
-    overflow: "hidden",
-  },
-  registerContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-  },
-  registerText: {
-    color: "gray",
-  },
-  registerLink: {
-    color: "#4CAF50",
-    fontWeight: "bold",
   },
 });

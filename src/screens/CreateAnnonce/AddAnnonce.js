@@ -1,69 +1,88 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  TextInput,
-  Button,
-} from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from "react-native";
+import ImageC from "../../components/ImageC";
+import TextInputC from "../../components/TextInputC";
+import ButtonC from "../../components/ButtonC";
+import * as ImagePicker from "expo-image-picker";
 
 export default function AddAnnonceScreen({ navigation }) {
   const [description, setDescription] = useState("");
-  const [images, setImages] = useState("");
+  const [images, setImages] = useState([]);
+
+  const handleImagePicker = async () => {
+    // Request permission to access media library
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== "granted") {
+      alert("Permission to access media library is required!");
+      return;
+    }
+
+    // Launch image picker for multiple selection
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaType: ImagePicker.MediaTypeOptions.Photo,
+      selectionLimit: 5, 
+      allowsMultipleSelection: true,
+    });
+
+    if (!result.canceled && result.assets && result.assets.length > 0) {
+      setImages(result.assets);
+    }
+  };
+
+  const removeImage = (uri) => {
+    setImages((prevImages) => prevImages.filter((image) => image.uri !== uri));
+  };
 
   return (
     <View style={styles.container}>
-      <Image
+      <ImageC
         source={require("../../../assets/AddAnnonce.png")}
-        style={styles.image}
         resizeMode="contain"
       />
+
       <Text style={styles.title}>Créer votre Annonce</Text>
+      <Text style={styles.subtitle}>
+        Ajouter une description et des images pour votre propriété.
+      </Text>
 
-      <View style={styles.inputContainer}>
-        <View style={styles.inputWrapper}>
-          <Ionicons
-            name="document-text-outline"
-            size={24}
-            color="gray"
-            style={styles.icon}
-          />
-          <TextInput
-            placeholder="Description"
-            onChangeText={setDescription}
-            value={description}
-            style={styles.inputField}
-          />
-        </View>
-      </View>
+      <TextInputC
+        placeholder="Description"
+        setValue={setDescription}
+        value={description}
+        iconName="document-text-outline"
+        style={styles.inputField}
+      />
 
-        <View style={styles.inputContainer}>
-            <View style={styles.inputWrapper}>
-                <Ionicons
-                    name="image-outline"
-                    size={24}
-                    color="gray"
-                    style={styles.icon}
-                />
-                <TextInput
-                    placeholder="Images"
-                    onChangeText={setImages}
-                    value={images}
-                    style={styles.inputField}
-                />
+      <TouchableOpacity style={styles.imagePicker} onPress={handleImagePicker}>
+        <Text style={styles.imagePickerText}>
+          {images.length > 0 ? "Images sélectionnées" : "Ajouter des images"}
+        </Text>
+      </TouchableOpacity>
+
+      {/* Display selected images */}
+      {images.length > 0 && (
+        <ScrollView horizontal contentContainerStyle={styles.imagePreviewContainer}>
+          {images.map((image, index) => (
+            <View key={index} style={styles.imagePreviewWrapper}>
+              <Image source={{ uri: image.uri }} style={styles.imagePreview} />
+              <TouchableOpacity
+                style={styles.removeImageButton}
+                onPress={() => removeImage(image.uri)}
+              >
+                <Text style={styles.removeImageButtonText}>X</Text>
+              </TouchableOpacity>
             </View>
-        </View>
+          ))}
+        </ScrollView>
+      )}
 
-
-      <View style={styles.buttonContainer}>
-        <Button
-          title="Suivant"
-          color="#4CAF50"
-          onPress={ () => navigation.navigate('AddProperty', { description, images }) }
-        />
-      </View>
+      <ButtonC
+        title="Suivant"
+        color="#4CAF50"
+        onPress={() =>
+          navigation.navigate("AddProperty", { description, images })
+        }
+      />
     </View>
   );
 }
@@ -74,11 +93,6 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     padding: 20,
     justifyContent: "center",
-  },
-  image: {
-    width: "100%",
-    height: 200,
-    marginBottom: 20,
   },
   title: {
     fontSize: 24,
@@ -92,46 +106,41 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 20,
   },
-  inputContainer: {
-    marginBottom: 15,
-  },
-  inputWrapper: {
-    flexDirection: "row",
+  imagePicker: {
+    borderWidth: 1,
+    borderColor: "gray",
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 20,
     alignItems: "center",
-    backgroundColor: "#f0f0f0",
-    borderRadius: 10,
-    paddingLeft: 10,
-    paddingRight: 10,
   },
-  icon: {
-    marginRight: 10,
-  },
-  inputField: {
-    flex: 1,
-    height: 50,
+  imagePickerText: {
     fontSize: 16,
-  },
-  forgotPassword: {
-    alignSelf: "flex-end",
-    marginBottom: 20,
-  },
-  forgotPasswordText: {
-    color: "#4CAF50",
-  },
-  buttonContainer: {
-    marginBottom: 20,
-    borderRadius: 10,
-    overflow: "hidden",
-  },
-  registerContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-  },
-  registerText: {
     color: "gray",
   },
-  registerLink: {
-    color: "#4CAF50",
+  imagePreviewContainer: {
+    flexDirection: "row",
+    marginBottom: 20,
+  },
+  imagePreviewWrapper: {
+    position: "relative",
+    marginRight: 10,
+  },
+  imagePreview: {
+    width: 100,
+    height: 100,
+    borderRadius: 5,
+  },
+  removeImageButton: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    backgroundColor: "rgba(255, 0, 0, 0.7)",
+    borderRadius: 10,
+    padding: 5,
+  },
+  removeImageButtonText: {
+    color: "white",
     fontWeight: "bold",
   },
 });

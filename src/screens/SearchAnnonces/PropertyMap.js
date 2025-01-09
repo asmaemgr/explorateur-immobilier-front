@@ -1,18 +1,11 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import MapView, { Marker } from "react-native-maps";
-import { useSelector } from 'react-redux';
 
-const Mapview = ({ navigation }) => {
-  const isLogged = useSelector(state => state.isLogged);
-
-  if(!isLogged) {
-      navigation.navigate('Login');
-  }
+const Mapview = () => {
 
   return (
     <View style={styles.container}>
-      {isLogged ? (
       <MapView
         style={styles.map}
         initialRegion={{
@@ -28,16 +21,7 @@ const Mapview = ({ navigation }) => {
           title="Marqueur 1" // Titre du marqueur
           description="C'est un marqueur placé sur la carte."
         />
-        {/* Marqueur 2 */}
-        <Marker
-          coordinate={{ latitude: 33.703904, longitude: -7.4059606 }}
-          title="Marqueur 2"
-          description="Voici un autre marqueur sur la carte."
-        />
       </MapView>
-      ) : (
-        <Text>Veuillez vous connecter pour voir la carte</Text>
-      )}
     </View>
   );
 };

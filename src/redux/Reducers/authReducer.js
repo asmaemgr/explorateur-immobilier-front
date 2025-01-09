@@ -1,20 +1,28 @@
 const initialState = {
-  isLoading: false, // Ensure this is initialized
+  isLoading: false,
   isLoggedIn: false,
-  token: null,
   error: null,
+  token: null,
+  user: null,
 };
 
-const authReducer = (state = initialState, action) => {
+export const authReducer = (state = initialState, action) => {
+  console.log("Reducer triggered with action:", action);
   switch (action.type) {
     case "LOGIN_REQUEST":
-      return { ...state, isLoading: true, error: null };
+      return {
+        ...state,
+        isLoading: true,
+        error: null,
+      };
     case "LOGIN_SUCCESS":
       return {
         ...state,
         isLoading: false,
         isLoggedIn: true,
-        token: action.payload.access_token,
+        token: action.payload.token,
+        user: action.payload.user,
+        error: null,
       };
     case "LOGIN_FAILURE":
       return {
@@ -27,4 +35,5 @@ const authReducer = (state = initialState, action) => {
       return state;
   }
 };
+
 export default authReducer;

@@ -5,14 +5,13 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
-  TextInput,
-  Button,
   Alert,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { login } from "../redux/Actions/actions";
+import { login } from "../redux/Actions/authActions";
+import ButtonC from "../components/ButtonC";
+import TextInputC from "../components/TextInputC";
+import ImageC from "../components/ImageC";
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
@@ -20,120 +19,75 @@ export default function LoginScreen({ navigation }) {
   const dispatch = useDispatch(); // Initialiser le dispatch
   const { isLoading, isLoggedIn, error } = useSelector((state) => state.auth);
 
-
   useEffect(() => {
-    if (isLoggedIn) {
-      navigation.navigate("Tracking");
+    if (!isLoading && isLoggedIn) {
+      navigation.navigate("Home");
+    } else if (!isLoading && error) {
+      Alert.alert("Erreur", error);
     }
-  }, [isLoggedIn, navigation]); // Ajoutez la dépendance à 'isLoggedIn'
+  }, [isLoading, isLoggedIn, error, navigation]);
 
+  if (isLoading) {
+    return (
+      <View style={styles.container}>
+        <Text>Connexion en cours...</Text>
+      </View>
+    );
+  }
+  
+  
 
   const handleLogin = () => {
-    if (!email || !password) {
-      Alert.alert(
-        "Validation",
-        "Veuillez saisir un nom d'utilisateur et un mot de passe."
-      );
-      return;
-    }
-    dispatch(login(email, password));
-    navigation.navigate('Home');
+    // if (!email || !password) {
+    //   Alert.alert(
+    //     "Validation",
+    //     "Veuillez saisir un nom d'utilisateur et un mot de passe."
+    //   );
+    //   return;
+    // }
+    // console.log("Dispatching login action with:", email, password);
+    // dispatch(login(email, password));
+    navigation.navigate("Home");
   };
-
-  // const handleLogin = async () => {
-
-  //   if(email === '' || password === '') {
-  //     // Alert.alert('Error', 'Please fill in all fields');
-  //     // return;
-  //     navigation.navigate('Home');
-  //   }
-  //   try {
-  //     // const apiUrl = `${config.API_URL}${config.port ? `:${config.port}` : ''}/authent/login`;
-  //     const apiUrl = `192.168.0.130:3000/authent/login`;
-  //     const response = await axios.post(apiUrl, {
-  //       email,
-  //       password,
-  //     });
-
-  //     // Vérification de la réponse
-  //     if (response.status === 200) {
-  //       Alert.alert('Login Successful', 'You have been logged in successfully!');
-  //       dispatch(login());
-  //       navigation.navigate('Home');
-  //     } else {
-  //       Alert.alert('Login Failed', 'Invalid credentials. Please try again.');
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //     Alert.alert('Error', 'An error occurred while logging in. Please try again later.');
-  //   }
-  // };
 
   return (
     <View style={styles.container}>
-      <Image
+      <ImageC
         source={require("../../assets/HouseSearching.png")}
-        style={styles.image}
         resizeMode="contain"
       />
-      <Text style={styles.title}>Welcome Back!</Text>
-      <Text style={styles.subtitle}>Glad to see you again</Text>
+      <Text style={styles.title}>Bienvenue de retour!</Text>
+      <Text style={styles.subtitle}>Ravi de vous revoir</Text>
 
-      <View style={styles.inputContainer}>
-        <View style={styles.inputWrapper}>
-          <Ionicons
-            name="mail-outline"
-            size={24}
-            color="gray"
-            style={styles.icon}
-          />
-          <TextInput
-            placeholder="Email"
-            onChangeText={setEmail}
-            value={email}
-            style={styles.inputField}
-          />
-        </View>
-      </View>
+      <TextInputC
+        value={email}
+        setValue={setEmail}
+        placeholder="Email"
+        iconName="mail-outline"
+        secureTextEntry={false}
+      />
 
-      <View style={styles.inputContainer}>
-        <View style={styles.inputWrapper}>
-          <Ionicons
-            name="lock-closed-outline"
-            size={24}
-            color="gray"
-            style={styles.icon}
-          />
-          <TextInput
-            placeholder="Password"
-            onChangeText={setPassword}
-            value={password}
-            secureTextEntry
-            style={styles.inputField}
-          />
-        </View>
-      </View>
+      <TextInputC
+        value={password}
+        setValue={setPassword}
+        placeholder="Mot de passe"
+        iconName="lock-closed-outline"
+        secureTextEntry={true}
+      />
 
       <TouchableOpacity
         onPress={() => navigation.navigate("ForgotPassword")}
         style={styles.forgotPassword}
       >
-        <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+        <Text style={styles.forgotPasswordText}>Mot de passe oublié?</Text>
       </TouchableOpacity>
 
-      <View style={styles.buttonContainer}>
-        <Button
-          title="LOGIN"
-          color="#4CAF50"
-          onPress={handleLogin}
-          //onPress={() => navigation.navigate('Home')}
-        />
-      </View>
+      <ButtonC title="Se Connecter" color="#4CAF50" onPress={handleLogin} />
 
       <View style={styles.registerContainer}>
-        <Text style={styles.registerText}>Don't have an account? </Text>
+        <Text style={styles.registerText}>Vous n'avez pas de compte? </Text>
         <TouchableOpacity onPress={() => navigation.navigate("Register")}>
-          <Text style={styles.registerLink}>Register</Text>
+          <Text style={styles.registerLink}>Inscrivez-vous</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -147,11 +101,6 @@ const styles = StyleSheet.create({
     padding: 20,
     justifyContent: "center",
   },
-  image: {
-    width: "100%",
-    height: 200,
-    marginBottom: 20,
-  },
   title: {
     fontSize: 24,
     fontWeight: "bold",
@@ -164,25 +113,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 20,
   },
-  inputContainer: {
-    marginBottom: 15,
-  },
-  inputWrapper: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#f0f0f0",
-    borderRadius: 10,
-    paddingLeft: 10,
-    paddingRight: 10,
-  },
-  icon: {
-    marginRight: 10,
-  },
-  inputField: {
-    flex: 1,
-    height: 50,
-    fontSize: 16,
-  },
+
   forgotPassword: {
     alignSelf: "flex-end",
     marginBottom: 20,
@@ -190,11 +121,7 @@ const styles = StyleSheet.create({
   forgotPasswordText: {
     color: "#4CAF50",
   },
-  buttonContainer: {
-    marginBottom: 20,
-    borderRadius: 10,
-    overflow: "hidden",
-  },
+
   registerContainer: {
     flexDirection: "row",
     justifyContent: "center",

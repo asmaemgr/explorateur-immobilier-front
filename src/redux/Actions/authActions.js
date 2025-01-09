@@ -7,30 +7,96 @@ export const LOGIN_SUCCESS = "LOGIN_SUCCESS";
 export const LOGIN_FAILURE = "LOGIN_FAILURE";
 
 // Action creator pour le login
-export const login = (username, password) => {
+export const login = (email, password) => {
   return async (dispatch) => {
-    dispatch({ type: LOGIN_REQUEST });
+    dispatch({ type: LOGIN_REQUEST }); // Dispatch request start
+
     const apiUrl = `${config.API_URL}${
       config.port ? `:${config.port}` : ""
     }/authent/login`;
+
     try {
-      const response = await axios.post(apiUrl, { username, password });
-      console.log("response:", response);
-      if (response.data && response.data.access_token) {
-        console.log("success response: ",response.data);
-        dispatch({ type: LOGIN_SUCCESS, payload: response.data });
+      const response = await axios.post(apiUrl, { email, password }, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      
+
+      console.log("Login response:", response);
+
+      if (!response.data) {
+        dispatch({
+          type: LOGIN_FAILURE,
+          payload: "Empty response from server",
+        });
+        return;
+      }
+
+      if (response.data.access_token) {
+        dispatch({
+          type: LOGIN_SUCCESS,
+          payload: {
+            token: response.data.access_token,
+            user: response.data.user || {},
+          },
+        });
       } else {
         dispatch({
           type: LOGIN_FAILURE,
+          payload: "Unexpected response format",
+        });
+      }
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "An error occurred during login.";
+      dispatch({
+        type: LOGIN_FAILURE,
+        payload: errorMessage,
+      });
+    }
+  };
+};
+
+// Register action types
+export const REGISTER_REQUEST = "REGISTER_REQUEST";
+export const REGISTER_SUCCESS = "REGISTER_SUCCESS";
+export const REGISTER_FAILURE = "REGISTER_FAILURE";
+
+// Register action creator
+export const register = (firstName, lastName, email, phone, password) => {
+  return async (dispatch) => {
+    dispatch({ type: REGISTER_REQUEST });
+    const apiUrl = `${config.API_URL}${
+      config.port ? `:${config.port}` : ""
+    }/authent/adduser`;
+    try {
+      const response = await axios.post(apiUrl, {
+        prenom: firstName,
+        nom: lastName,
+        email: email,
+        tel: phone,
+        password: password,
+      });
+      console.log("response:", response);
+      if (response.data && response.data.access_token) {
+        console.log("success response: ", response.data);
+        dispatch({ type: REGISTER_SUCCESS, payload: response.data });
+      } else {
+        dispatch({
+          type: REGISTER_FAILURE,
           payload: "Unexpected response from server",
         });
       }
     } catch (error) {
       console.error("Error:", error);
       dispatch({
-        type: LOGIN_FAILURE,
+        type: REGISTER_FAILURE,
         payload:
-          error.response?.data?.message || "An error occurred during login",
+          error.response?.data?.message ||
+          "An error occurred during registration",
       });
     }
   };
