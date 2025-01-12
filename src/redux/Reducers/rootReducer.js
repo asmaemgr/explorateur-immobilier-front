@@ -4,7 +4,8 @@ import annonceReducer from "./annonceReducer";
 
 
 const rootReducer = combineReducers({
-  auth: authReducer, annonceReducer,
+  auth: authReducer,
+  annonce: annonceReducer,
 });
 
 

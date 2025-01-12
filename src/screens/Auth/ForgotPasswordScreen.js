@@ -13,7 +13,7 @@ export default function ForgotPasswordScreen({ navigation }) {
       </TouchableOpacity>
 
       <Image
-        source={require('../../assets/ForgotPassword.png')}
+        source={require('../../../assets/ForgotPassword.png')}
         style={styles.image}
         resizeMode="contain"
       />

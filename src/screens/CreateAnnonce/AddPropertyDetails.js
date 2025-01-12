@@ -9,7 +9,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import TextInputC from "../../components/TextInputC";
 import { useDispatch, useSelector } from "react-redux";
-import { addAnnonce } from "../../redux/Actions/actions";
+import { addAnnonce } from "../../redux/Actions/annonceActions";
 import ButtonC from "../../components/ButtonC";
 
 export default function AddPropertyDetailsScreen({ navigation, route }) {
@@ -44,37 +44,66 @@ export default function AddPropertyDetailsScreen({ navigation, route }) {
   //   }
   // }, [isLoggedIn, navigation]);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    const formData = new FormData();
+  
+    // Append description
+    formData.append("description", description);
+  
+    // Append images
+    images.forEach((image, index) => {
+      const imageName = `image_${index}.jpg`;
+      formData.append("images", {
+        uri: image.uri,
+        name: imageName,
+        type: "image/jpeg",
+      });
+    });
+  
+    // Create property details
     const propertyDetails = {
-      description,
-      images,
-      property: {
-        adresse,
-        ville,
-        superficie,
-        prix,
-        type,
-        status,
-        nbChambres,
-        nbSallesDeBain,
-        mesureSon,
-        mesureCO2,
-        // etage: type === "Appartement" ? etage : undefined,
-        // avecAscenceur: type === "Appartement" ? avecAscenceur : undefined,
-        // nbEtages: type !== "Appartement" ? nbEtages : undefined,
-        // avecGarage: type !== "Appartement" ? avecGarage : undefined,
-        // avecSousSol: type === "Maison" ? avecSousSol : undefined,
-        // surfaceJardin: type === "Villa" ? surfaceJardin : undefined,
-        // avecPiscine: type === "Villa" ? avecPiscine : undefined,
-      },
+      adresse,
+      ville,
+      superficie,
+      prix,
+      type,
+      status,
+      nbChambres,
+      nbSallesDeBain,
+      mesureSon,
+      mesureCO2,
     };
-
-    console.log(propertyDetails);
-
-    dispatch(addAnnonce(propertyDetails));
-
-    navigation.navigate("Home");
+  
+    if (type === "Appartement") {
+      propertyDetails.etage = etage;
+      propertyDetails.avecAscenceur = avecAscenceur;
+    } else if (type === "Maison") {
+      propertyDetails.nbEtages = nbEtages;
+      propertyDetails.avecGarage = avecGarage;
+      propertyDetails.avecSousSol = avecSousSol;
+    } else if (type === "Villa") {
+      propertyDetails.nbEtages = nbEtages;
+      propertyDetails.surfaceJardin = surfaceJardin;
+      propertyDetails.avecGarage = avecGarage;
+      propertyDetails.avecPiscine = avecPiscine;
+    }
+  
+    Object.keys(propertyDetails).forEach((key) => {
+      formData.append(`property[${key}]`, propertyDetails[key]);
+    });
+  
+    try {
+      const response = dispatch(addAnnonce(formData));
+      if (response.success) {
+        navigation.navigate("ListAnnonces");
+      } else {
+        console.error("Failed to add annonce:", response.error);
+      }
+    } catch (error) {
+      console.error("Unexpected error during handleSubmit:", error);
+    }
   };
+  
 
   return (
     <ScrollView contentContainerStyle={styles.container}>

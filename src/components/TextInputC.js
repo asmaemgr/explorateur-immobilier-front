@@ -11,7 +11,9 @@ const TextInputC = ({
   secureTextEntry,
   keyboardType,
   onBlur,
-  unit
+  unit,
+  autoCapitalize,
+  autoCorrect
 }) => {
   return (
     <View style={styles.inputContainer}>
@@ -25,6 +27,8 @@ const TextInputC = ({
           style={styles.inputField}
           keyboardType={keyboardType}
           onBlur={onBlur}
+          autoCapitalize={autoCapitalize}
+          autoCorrect={autoCorrect}
         />
         {unit && <Text style={styles.unitText}>{unit}</Text>}
       </View>
@@ -40,6 +44,9 @@ TextInputC.propTypes = {
   secureTextEntry: PropTypes.bool,
   keyboardType: PropTypes.string,
   onBlur: PropTypes.func,
+  unit: PropTypes.string,
+  autoCapitalize: PropTypes.string,
+  autoCorrect: PropTypes.bool
 };
 
 

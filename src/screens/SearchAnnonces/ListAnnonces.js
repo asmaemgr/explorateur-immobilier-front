@@ -9,69 +9,35 @@ import {
   Image,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
+import { useDispatch, useSelector } from "react-redux";
+import { viewAnnonce } from "../../redux/Actions/annonceActions";
+import config from "../../config";
 
 const ListAnnonces = ({ navigation }) => {
-  const [annonces, setAnnonces] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState({ type: "", prix: "", superficie: "" });
+  const [filteredAnnonces, setFilteredAnnonces] = useState([]); // Holds filtered data
+  const [originalAnnonces, setOriginalAnnonces] = useState([]); // Holds original data
+  const annoncesData = useSelector((state) => state.annonce.annonces);
+  const { isLoggedIn } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    const dummyData = [
-      {
-        description: "Spacious villa in the city center",
-        images: [
-          require("../../../assets/villa1.jpg"),
-          require("../../../assets/villa2.jpg"),
-        ],
-        property: {
-          longitude: 33.703904,
-          latitude: -7.4059606,
-          adresse: "123 Main Street",
-          ville: "Paris",
-          superficie: 250,
-          prix: 500000,
-          type: "Villa",
-          status: "A vendre",
-          nbChambres: 5,
-          nbSallesDeBain: 3,
-          mesureSon: 4,
-          mesureCO2: 5,
-          nbEtages: 2,
-          surfaceJardin: 100,
-          avecPiscine: true,
-          avecGarage: true,
-        },
-      },
-      {
-        description: "Cozy apartment near the park",
-        images: [
-          require("../../../assets/appart1.jpg"),
-          require("../../../assets/appart2.jpg"),
-          require("../../../assets/appart3.jpg"),
-        ],
-        property: {
-          longitude: 33.697904,
-          latitude: -7.4019606,
-          adresse: "456 Elm Street",
-          ville: "Lyon",
-          superficie: 80,
-          prix: 300000,
-          type: "Apartment",
-          status: "A louer",
-          nbChambres: 2,
-          nbSallesDeBain: 1,
-          mesureSon: 4,
-          mesureCO2: 5,
-          etage: 3,
-          avecAscenseur: true,
-        },
-      },
-    ];
-    setAnnonces(dummyData);
-  }, []);
+    if (!isLoggedIn) {
+      navigation.navigate("Login");
+      return;
+    }
+    dispatch(viewAnnonce());
+  }, [isLoggedIn, navigation, dispatch]);
+
+  useEffect(() => {
+    setOriginalAnnonces(annoncesData); // Update original data
+    setFilteredAnnonces(annoncesData); // Set filtered data to match the original
+    console.log("Updated Annonces: ", annoncesData);
+  }, [annoncesData]);
 
   const handleSearch = () => {
-    const filteredAnnonces = annonces.filter((annonce) => {
+    const filtered = originalAnnonces.filter((annonce) => {
       const matchesSearch = annonce.description
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
@@ -91,7 +57,7 @@ const ListAnnonces = ({ navigation }) => {
       return matchesSearch && matchesType && matchesPrix && matchesSuperficie;
     });
 
-    setAnnonces(filteredAnnonces);
+    setFilteredAnnonces(filtered); // Update filtered list
   };
 
   return (
@@ -114,7 +80,7 @@ const ListAnnonces = ({ navigation }) => {
           >
             {filter.type === "" ? <Picker.Item label="Type" value="" /> : null}
             <Picker.Item label="Villa" value="Villa" />
-            <Picker.Item label="Apartment" value="Apartment" />
+            <Picker.Item label="Appartement" value="Appartement" />
             <Picker.Item label="Maison" value="Maison" />
           </Picker>
 
@@ -144,10 +110,15 @@ const ListAnnonces = ({ navigation }) => {
 
       {/* Annonces List Section */}
       <ScrollView style={styles.annoncesList}>
-        {annonces && annonces.length > 0 ? (
-          annonces.map((annonce, index) => (
+        {filteredAnnonces && filteredAnnonces.length > 0 ? (
+          filteredAnnonces.map((annonce, index) => (
             <View key={index} style={styles.annonceCard}>
-              <Image source={annonce.images[0]} style={styles.annonceImage} />
+              <Image
+                source={{
+                  uri: `${config.BASE_URL}/annonces/uploads/${annonce.images[0]}`,
+                }}
+                style={styles.annonceImage}
+              />
               <View style={styles.annonceDetails}>
                 <Text style={styles.description}>{annonce.description}</Text>
                 <Text>
@@ -176,7 +147,9 @@ const ListAnnonces = ({ navigation }) => {
                     navigation.navigate("DetailsAnnonce", { annonce })
                   }
                 >
-                  <Text style={styles.detailsButtonText}>Voir les détails</Text>
+                  <Text style={styles.detailsButtonText}>
+                    Voir les détails
+                  </Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -190,6 +163,7 @@ const ListAnnonces = ({ navigation }) => {
 };
 
 export default ListAnnonces;
+
 
 const styles = StyleSheet.create({
   container: {

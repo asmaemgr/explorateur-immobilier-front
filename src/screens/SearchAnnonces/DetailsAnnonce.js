@@ -12,6 +12,7 @@ import {
   Dimensions,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import config from "../../config";
 
 const DetailsAnnonce = ({ navigation, route }) => {
   const { annonce } = route.params;
@@ -100,7 +101,7 @@ const DetailsAnnonce = ({ navigation, route }) => {
           <ScrollView horizontal style={styles.imageContainer}>
             {annonce.images.map((image, idx) => (
               <TouchableOpacity key={idx} onPress={() => openModal(image)}>
-                <Image source={image} style={styles.image} />
+                <Image source={{ uri: `${config.BASE_URL}/annonces/uploads/${image}` }} style={styles.image} />
               </TouchableOpacity>
             ))}
           </ScrollView>
@@ -167,7 +168,7 @@ const DetailsAnnonce = ({ navigation, route }) => {
             <TouchableWithoutFeedback>
               <View style={styles.modalContent}>
                 <Image
-                  source={selectedImage}
+                  source={{ uri : `${config.BASE_URL}/annonces/uploads/${selectedImage}` }}
                   style={styles.modalImage}
                 />
               </View>

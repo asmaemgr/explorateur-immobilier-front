@@ -93,13 +93,15 @@ export default function AddPropertyScreen({ navigation, route }) {
           />
 
           <Picker
-            selectedValue={type}
-            style={styles.inputField}
-            onValueChange={(itemValue) => setType(itemValue)}
+            selectedValue={filter.type}
+            style={styles.filterPicker}
+            onValueChange={(value) => setFilter({ ...filter, type: value })}
+            mode="dropdown"
           >
-            <Picker.Item label="Appartement" value="Appartement" />
-            <Picker.Item label="Maison" value="Maison" />
+            <Picker.Item label="Type" value="" />
             <Picker.Item label="Villa" value="Villa" />
+            <Picker.Item label="Apartment" value="Apartment" />
+            <Picker.Item label="Maison" value="Maison" />
           </Picker>
         </View>
       </View>

@@ -4,20 +4,26 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Image,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { login } from "../redux/Actions/authActions";
-import ButtonC from "../components/ButtonC";
-import TextInputC from "../components/TextInputC";
-import ImageC from "../components/ImageC";
+import { login } from "../../redux/Actions/authActions";
+import ButtonC from "../../components/ButtonC";
+import TextInputC from "../../components/TextInputC";
+import ImageC from "../../components/ImageC";
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useDispatch(); // Initialiser le dispatch
   const { isLoading, isLoggedIn, error } = useSelector((state) => state.auth);
+
+  const validateEmail = (email) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(String(email).toLowerCase());
+  };
 
   useEffect(() => {
     if (!isLoading && isLoggedIn) {
@@ -25,35 +31,33 @@ export default function LoginScreen({ navigation }) {
     } else if (!isLoading && error) {
       Alert.alert("Erreur", error);
     }
-  }, [isLoading, isLoggedIn, error, navigation]);
 
-  if (isLoading) {
-    return (
-      <View style={styles.container}>
-        <Text>Connexion en cours...</Text>
-      </View>
-    );
-  }
-  
-  
+    if (email && !validateEmail(email)) {
+      setEmailError("L'email est invalide.");
+    } else {
+      setEmailError("");
+    }
+  }, [isLoading, isLoggedIn, error, navigation, email]);
 
   const handleLogin = () => {
-    // if (!email || !password) {
-    //   Alert.alert(
-    //     "Validation",
-    //     "Veuillez saisir un nom d'utilisateur et un mot de passe."
-    //   );
-    //   return;
-    // }
-    // console.log("Dispatching login action with:", email, password);
-    // dispatch(login(email, password));
-    navigation.navigate("Home");
+    if (!email || !password) {
+      Alert.alert(
+        "Validation",
+        "Veuillez saisir un nom d'utilisateur et un mot de passe."
+      );
+      return;
+    }
+    dispatch(login(email, password)).then((response) => {
+      if (response.type === "LOGIN_SUCCESS") {
+        navigation.navigate("Home");
+      }
+    });
   };
 
   return (
     <View style={styles.container}>
       <ImageC
-        source={require("../../assets/HouseSearching.png")}
+        source={require("../../../assets/HouseSearching.png")}
         resizeMode="contain"
       />
       <Text style={styles.title}>Bienvenue de retour!</Text>
@@ -64,8 +68,13 @@ export default function LoginScreen({ navigation }) {
         setValue={setEmail}
         placeholder="Email"
         iconName="mail-outline"
-        secureTextEntry={false}
+        keyboardType="email-address"
+        autoCapitalize="none"
+        autoCorrect={false}
       />
+      {emailError ? (
+        <Text style={styles.errorMessage}>{emailError}</Text>
+      ) : null}
 
       <TextInputC
         value={password}
@@ -82,7 +91,16 @@ export default function LoginScreen({ navigation }) {
         <Text style={styles.forgotPasswordText}>Mot de passe oublié?</Text>
       </TouchableOpacity>
 
-      <ButtonC title="Se Connecter" color="#4CAF50" onPress={handleLogin} />
+      {!isLoading && (
+        <ButtonC title="Se Connecter" color="#4CAF50" onPress={handleLogin} />
+      )}
+
+      {isLoading && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#4CAF50" />
+          <Text style={styles.loadingText}>Chargement...</Text>
+        </View>
+      )}
 
       <View style={styles.registerContainer}>
         <Text style={styles.registerText}>Vous n'avez pas de compte? </Text>
@@ -132,5 +150,19 @@ const styles = StyleSheet.create({
   registerLink: {
     color: "#4CAF50",
     fontWeight: "bold",
+  },
+  errorMessage: {
+    color: "red",
+    fontSize: 12,
+    marginTop: -10,
+    marginBottom: 10,
+  },
+  loadingContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  loadingText: {
+    marginLeft: 10,
   },
 });

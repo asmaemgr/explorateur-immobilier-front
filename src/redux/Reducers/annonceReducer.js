@@ -4,7 +4,7 @@ const initialState = {
   error: null,
 };
 
-const annonceReducer = (state = initialState, action) => {
+export const annonceReducer = (state = initialState, action) => {
   switch (action.type) {
     case "ADD_ANNONCE_REQUEST":
       return { ...state, isLoading: true, error: null };
@@ -20,7 +20,24 @@ const annonceReducer = (state = initialState, action) => {
         isLoading: false,
         error: action.payload,
       };
+
+    case "VIEW_ANNONCE_REQUEST":
+      return { ...state, isLoading: true, error: null };
+    case "VIEW_ANNONCE_SUCCESS":
+      return {
+        ...state,
+        isLoading: false,
+        annonces: action.payload,
+      };
+    case "VIEW_ANNONCE_FAILURE":
+      return {
+        ...state,
+        isLoading: false,
+        error: action.payload,
+      };
     default:
       return state;
   }
 };
+
+export default annonceReducer;

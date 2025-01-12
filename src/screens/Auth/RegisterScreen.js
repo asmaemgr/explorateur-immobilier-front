@@ -11,14 +11,16 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
-import { register } from "../redux/Actions/authActions";
+import { register } from "../../redux/Actions/authActions";
 
 export default function RegisterScreen({ navigation }) {
+  const [emailError, setEmailError] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  let userData = {};
   const dispatch = useDispatch(); // Initialiser le dispatch
   const { isLoading, isLoggedIn, error } = useSelector((state) => state.auth);
 
@@ -26,19 +28,35 @@ export default function RegisterScreen({ navigation }) {
     if (isLoggedIn) {
       navigation.navigate("Home");
     }
-  }, [isLoggedIn, navigation]); // Ajoutez la dépendance à 'isLoggedIn'
+
+    if (email && !validateEmail(email)) {
+      setEmailError("L'email est invalide.");
+    } else {
+      setEmailError("");
+    }
+  }, [isLoggedIn, navigation, email]); // Ajoutez la dépendance à 'isLoggedIn'
 
   const handleRegister = ({ firstName, lastName, email, phone, password }) => {
     if (!firstName || !lastName || !email || !phone || !password) {
-      Alert.alert(
-        "Validation",
-        "Veuillez saisir tous les champs."
-      );
+      Alert.alert("Validation", "Veuillez saisir tous les champs.");
       return;
     }
     // Register user
-    dispatch(register(firstName, lastName, email, phone, password));
+    userData = {
+      prenom: firstName,
+      nom: lastName,
+      email: email,
+      tel: phone,
+      password: password,
+    };
+
+    dispatch(register(userData));
     navigation.navigate("Login");
+  };
+
+  const validateEmail = (email) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(String(email).toLowerCase());
   };
 
   return (
@@ -91,21 +109,27 @@ export default function RegisterScreen({ navigation }) {
             secureTextEntry: true,
           },
         ].map((input, index) => (
-          <View key={index} style={styles.inputContainer}>
-            <Ionicons
-              name={input.icon}
-              size={24}
-              color="gray"
-              style={styles.icon}
-            />
-            <TextInput
-              placeholder={input.placeholder}
-              style={styles.inputField}
-              onChangeText={input.setValue}
-              value={input.value}
-              keyboardType={input.keyboardType || "default"}
-              secureTextEntry={input.secureTextEntry || false}
-            />
+          <View>
+            <View key={index} style={styles.inputContainer}>
+              <Ionicons
+                name={input.icon}
+                size={24}
+                color="gray"
+                style={styles.icon}
+              />
+              <TextInput
+                placeholder={input.placeholder}
+                style={styles.inputField}
+                onChangeText={input.setValue}
+                value={input.value}
+                keyboardType={input.keyboardType || "default"}
+                secureTextEntry={input.secureTextEntry || false}
+                autoCapitalize={input.placeholder === "Email" ? "none" : "sentences"}
+              />
+            </View>
+            {input.placeholder === "Email" && emailError ? (
+              <Text style={{ color: "red", marginTop: -5, marginBottom: 10 }}>{emailError}</Text>
+            ) : null}
           </View>
         ))}
 

@@ -1,9 +1,11 @@
 import React, { Suspense } from "react";
 import { createStackNavigator } from "@react-navigation/stack";
-import LoginScreen from "./screens/LoginScreen";
+import LoginScreen from "./screens/Auth/LoginScreen";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { useNavigation } from "@react-navigation/native";
 import { StyleSheet } from "react-native";
+import { useDispatch } from "react-redux";
+import { logout } from "./redux/Actions/authActions";
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -11,8 +13,9 @@ const Drawer = createDrawerNavigator();
 const HomeScreen = React.lazy(() => import("./screens/HomeScreen"));
 const AddAnnonce = React.lazy(() => import("./screens/CreateAnnonce/AddAnnonce"));
 const ListAnnonces = React.lazy(() => import("./screens/SearchAnnonces/ListAnnonces"));
-const RegisterScreen = React.lazy(() => import("./screens/RegisterScreen"));
-const ForgotPasswordScreen = React.lazy(() => import("./screens/ForgotPasswordScreen"));
+const RegisterScreen = React.lazy(() => import("./screens/Auth/RegisterScreen"));
+const ForgotPasswordScreen = React.lazy(() => import("./screens/Auth/ForgotPasswordScreen"));
+const LogoutScreen = React.lazy(() => import("./screens/Auth/LogoutScreen"));
 const AddProperty = React.lazy(() => import("./screens/CreateAnnonce/AddProperty"));
 const AddPropertyDetails = React.lazy(() => import("./screens/CreateAnnonce/AddPropertyDetails"));
 const DetailsAnnonce = React.lazy(() => import("./screens/SearchAnnonces/DetailsAnnonce"));
@@ -54,20 +57,15 @@ function DrawerMenu() {
         />
         <Drawer.Screen
           name="Se déconnecter"
-          component={() => {
-            const navigation = useNavigation();
-            React.useEffect(() => {
-              // Logout logic here
-              navigation.navigate("Login");
-            }, []);
-            return null;
-          }}
+          component={LogoutScreen}
           options={{ title: "🚪 Se déconnecter", drawerLabelStyle: [styles.drawerLabel, styles.logoutLabel] }}
         />
       </Drawer.Navigator>
     </Suspense>
   );
 }
+
+
 
 export default function AppNavigator() {
   return (
@@ -84,6 +82,7 @@ export default function AppNavigator() {
         <Stack.Screen name="AddPropertyDetails" component={AddPropertyDetails} />
         <Stack.Screen name="DetailsAnnonce" component={DetailsAnnonce} />
         <Stack.Screen name="PropertyMap" component={PropertyMap} />
+        <Stack.Screen name="ListAnnonces" component={ListAnnonces} />
       </Stack.Navigator>
     </Suspense>
   );

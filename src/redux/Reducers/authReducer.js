@@ -31,6 +31,37 @@ export const authReducer = (state = initialState, action) => {
         isLoggedIn: false,
         error: action.payload,
       };
+    case "REGISTER_REQUEST":
+      return {
+        ...state,
+        isLoading: true,
+        error: null,
+      };
+    case "REGISTER_SUCCESS":
+      return {
+        ...state,
+        isLoading: false,
+        isLoggedIn: true,
+        token: action.payload.token,
+        user: action.payload.user,
+        error: null,
+      };
+    case "REGISTER_FAILURE":
+      return {
+        ...state,
+        isLoading: false,
+        isLoggedIn: false,
+        error: action.payload,
+      };
+    case "LOGOUT":
+      return {
+        ...state,
+        isLoading: false,
+        isLoggedIn: false,
+        token: null,
+        user: null,
+        error: null,
+      };
     default:
       return state;
   }
