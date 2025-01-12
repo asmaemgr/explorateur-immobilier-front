@@ -88,8 +88,8 @@ const DetailsAnnonce = ({ navigation, route }) => {
     }
   };
 
-  const openMap = (longitude, latitude) => {
-    navigation.navigate("PropertyMap", { longitude, latitude });
+  const openMap = (longitude, latitude, type, description) => {
+    navigation.navigate("PropertyMap", { longitude: -7.390833, latitude: 33.698431, type, description });
   };
 
   return (
