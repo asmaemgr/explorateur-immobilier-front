@@ -109,8 +109,8 @@ export default function RegisterScreen({ navigation }) {
             secureTextEntry: true,
           },
         ].map((input, index) => (
-          <View>
-            <View key={index} style={styles.inputContainer}>
+          <View key={index}>
+            <View style={styles.inputContainer}>
               <Ionicons
                 name={input.icon}
                 size={24}

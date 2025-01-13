@@ -40,6 +40,12 @@ const ListAnnonces = ({ navigation }) => {
     const filtered = originalAnnonces.filter((annonce) => {
       const matchesSearch = annonce.description
         .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+        annonce.property.ville
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+        annonce.property.adresse
+        .toLowerCase()
         .includes(searchTerm.toLowerCase());
 
       const matchesType = filter.type

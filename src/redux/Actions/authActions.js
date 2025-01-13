@@ -1,6 +1,5 @@
 import axios from 'axios';
 import config from '../../config';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Types d'action
 export const LOGIN_REQUEST = 'LOGIN_REQUEST';
@@ -27,7 +26,6 @@ export const login = (username, password) => {
       if (response.data && response.data.access_token) {
         const decodedToken = JSON.parse(atob(response.data.access_token.split('.')[1]));
         const userId = decodedToken.sub;
-        await AsyncStorage.setItem('userId', userId.toString());
         dispatch({
           type: LOGIN_SUCCESS,
           payload: {

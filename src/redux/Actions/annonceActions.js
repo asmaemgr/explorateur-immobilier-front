@@ -24,7 +24,6 @@ export const addAnnonce = (formData) => {
             "Content-Type": "multipart/form-data",
           },
         });
-  
         if (response.data) {
           dispatch({ type: ADD_ANNONCE_SUCCESS, payload: response.data });
           return { success: true, data: response.data };

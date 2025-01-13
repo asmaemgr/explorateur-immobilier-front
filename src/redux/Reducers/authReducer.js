@@ -3,7 +3,7 @@ const initialState = {
   isLoggedIn: false,
   error: null,
   token: null,
-  user: null,
+  userId: null,
 };
 
 export const authReducer = (state = initialState, action) => {
@@ -21,7 +21,7 @@ export const authReducer = (state = initialState, action) => {
         isLoading: false,
         isLoggedIn: true,
         token: action.payload.token,
-        user: action.payload.user,
+        userId: action.payload.id,
         error: null,
       };
     case "LOGIN_FAILURE":
@@ -43,7 +43,7 @@ export const authReducer = (state = initialState, action) => {
         isLoading: false,
         isLoggedIn: true,
         token: action.payload.token,
-        user: action.payload.user,
+        userId: action.payload.id,
         error: null,
       };
     case "REGISTER_FAILURE":
@@ -59,7 +59,7 @@ export const authReducer = (state = initialState, action) => {
         isLoading: false,
         isLoggedIn: false,
         token: null,
-        user: null,
+        userId: null,
         error: null,
       };
     default:

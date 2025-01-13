@@ -18,6 +18,11 @@ const DetailsAnnonce = ({ navigation, route }) => {
   const { annonce } = route.params;
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  const toggleFavorite = () => {
+    setIsFavorite(!isFavorite);
+  };
 
   const openModal = (image) => {
     setSelectedImage(image);
@@ -89,7 +94,12 @@ const DetailsAnnonce = ({ navigation, route }) => {
   };
 
   const openMap = (longitude, latitude, type, description) => {
-    navigation.navigate("PropertyMap", { longitude: -7.390833, latitude: 33.698431, type, description });
+    navigation.navigate("PropertyMap", {
+      longitude: -7.390833,
+      latitude: 33.698431,
+      type,
+      description,
+    });
   };
 
   return (
@@ -101,7 +111,12 @@ const DetailsAnnonce = ({ navigation, route }) => {
           <ScrollView horizontal style={styles.imageContainer}>
             {annonce.images.map((image, idx) => (
               <TouchableOpacity key={idx} onPress={() => openModal(image)}>
-                <Image source={{ uri: `${config.BASE_URL}/annonces/uploads/${image}` }} style={styles.image} />
+                <Image
+                  source={{
+                    uri: `${config.BASE_URL}/annonces/uploads/${image}`,
+                  }}
+                  style={styles.image}
+                />
               </TouchableOpacity>
             ))}
           </ScrollView>
@@ -141,17 +156,34 @@ const DetailsAnnonce = ({ navigation, route }) => {
         </View>
       </ScrollView>
 
+      {/* Floating Favorite Button */}
       <TouchableOpacity
-        style={styles.saveButton}
-        onPress={() => console.log("Save button pressed")}
+        style={[
+          styles.favoriteButton,
+          isFavorite && styles.favoriteButtonActive,
+        ]}
+        onPress={toggleFavorite}
       >
-        <Text style={{ color: "#FFFFFF" }}>Enregistrer "Préférée"</Text>
+        <Icon
+          name={isFavorite ? "favorite" : "favorite-border"}
+          size={28}
+          color="#FFFFFF"
+        />
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.messButton}
+        onPress={() => navigation.navigate("MessagerieAnnonce")}
+      >
+        <Text style={{ color: "#000000" }}>Messagerie</Text>
       </TouchableOpacity>
 
       {/* Floating Map Button */}
       <TouchableOpacity
         style={styles.mapButton}
-        onPress={() => openMap(annonce.property.logitude, annonce.property.latitude)}
+        onPress={() =>
+          openMap(annonce.property.logitude, annonce.property.latitude)
+        }
       >
         <Icon name="map" size={28} color="#FFFFFF" />
       </TouchableOpacity>
@@ -168,7 +200,9 @@ const DetailsAnnonce = ({ navigation, route }) => {
             <TouchableWithoutFeedback>
               <View style={styles.modalContent}>
                 <Image
-                  source={{ uri : `${config.BASE_URL}/annonces/uploads/${selectedImage}` }}
+                  source={{
+                    uri: `${config.BASE_URL}/annonces/uploads/${selectedImage}`,
+                  }}
                   style={styles.modalImage}
                 />
               </View>
@@ -251,13 +285,14 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 6,
   },
-  saveButton: {
+  messButton: {
     position: "absolute",
     bottom: 20,
-    left: 20,
-    backgroundColor: "#4CAF50", // Vibrant green for visibility
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    left: "48%",
+    transform: [{ translateX: -50 }],
+    backgroundColor: "#FFFFFF",
+    paddingHorizontal: 30,
+    paddingVertical: 15,
     borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
@@ -266,7 +301,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 5,
     elevation: 6,
-  },
+    },
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent black overlay
@@ -284,6 +319,26 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     resizeMode: "contain",
+  },
+  favoriteButton: {
+    position: "absolute",
+    bottom: 20,
+    left: 20,
+    backgroundColor: "#F44336", // Vibrant red for visibility
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 6,
+  },
+  favoriteButtonActive: {
+    // gray color for active state
+    backgroundColor: "#9E9E9E",
   },
 });
 

@@ -18,7 +18,7 @@ export default function AddPropertyScreen({ navigation, route }) {
   const [ville, setVille] = useState("");
   const [superficie, setSuperficie] = useState("");
   const [prix, setPrix] = useState("");
-  const [type, setType] = useState("Appartement");
+  const [type, setType] = useState("Villa");
   const [status, setStatus] = useState("A vendre");
   const [nbChambres, setNbChambres] = useState("");
   const [nbSallesDeBain, setNbSallesDeBain] = useState("");
@@ -26,6 +26,20 @@ export default function AddPropertyScreen({ navigation, route }) {
   const [mesureCO2, setMesureCO2] = useState("");
 
   const handleNext = async () => {
+    if (
+      !adresse ||
+      !ville ||
+      !superficie ||
+      !prix ||
+      !nbChambres ||
+      !nbSallesDeBain ||
+      !mesureSon ||
+      !mesureCO2
+    ) {
+      Alert.alert("Erreur", "Veuillez remplir tous les champs");
+      return;
+    }
+
     navigation.navigate("AddPropertyDetails", {
       description,
       images,
@@ -93,14 +107,12 @@ export default function AddPropertyScreen({ navigation, route }) {
           />
 
           <Picker
-            selectedValue={filter.type}
-            style={styles.filterPicker}
-            onValueChange={(value) => setFilter({ ...filter, type: value })}
-            mode="dropdown"
+            selectedValue={type}
+            style={styles.inputField}
+            onValueChange={(itemValue) => setType(itemValue)}
           >
-            <Picker.Item label="Type" value="" />
             <Picker.Item label="Villa" value="Villa" />
-            <Picker.Item label="Apartment" value="Apartment" />
+            <Picker.Item label="Appartement" value="Appartement" />
             <Picker.Item label="Maison" value="Maison" />
           </Picker>
         </View>

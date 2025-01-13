@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Alert } from "react-native";
 import ImageC from "../../components/ImageC";
 import TextInputC from "../../components/TextInputC";
 import ButtonC from "../../components/ButtonC";
@@ -31,6 +31,18 @@ export default function AddAnnonceScreen({ navigation }) {
 
   const removeImage = (uri) => {
     setImages((prevImages) => prevImages.filter((image) => image.uri !== uri));
+  };
+
+  const handleNext = () => {
+    if (!description) {
+      Alert.alert("Erreur", "Veuillez remplir la description.");
+      return;
+    }
+    if (images.length === 0) {
+      Alert.alert("Erreur", "Veuillez choisir des images.");
+      return;
+    }
+    navigation.navigate("AddProperty", { description, images });
   };
 
   return (
@@ -79,9 +91,7 @@ export default function AddAnnonceScreen({ navigation }) {
       <ButtonC
         title="Suivant"
         color="#4CAF50"
-        onPress={() =>
-          navigation.navigate("AddProperty", { description, images })
-        }
+        onPress={handleNext}
       />
     </View>
   );

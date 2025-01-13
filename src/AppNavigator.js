@@ -20,6 +20,7 @@ const AddProperty = React.lazy(() => import("./screens/CreateAnnonce/AddProperty
 const AddPropertyDetails = React.lazy(() => import("./screens/CreateAnnonce/AddPropertyDetails"));
 const DetailsAnnonce = React.lazy(() => import("./screens/SearchAnnonces/DetailsAnnonce"));
 const PropertyMap = React.lazy(() => import("./screens/SearchAnnonces/PropertyMap"));
+const MessagerieAnnonce = React.lazy(() => import("./screens/SearchAnnonces/MessagerieAnnonce"));
 
 function DrawerMenu() {
   return (
@@ -82,7 +83,7 @@ export default function AppNavigator() {
         <Stack.Screen name="AddPropertyDetails" component={AddPropertyDetails} />
         <Stack.Screen name="DetailsAnnonce" component={DetailsAnnonce} />
         <Stack.Screen name="PropertyMap" component={PropertyMap} />
-        <Stack.Screen name="ListAnnonces" component={ListAnnonces} />
+        <Stack.Screen name="MessagerieAnnonce" component={MessagerieAnnonce} />
       </Stack.Navigator>
     </Suspense>
   );

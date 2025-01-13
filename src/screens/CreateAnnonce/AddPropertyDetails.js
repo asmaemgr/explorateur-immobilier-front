@@ -36,13 +36,13 @@ export default function AddPropertyDetailsScreen({ navigation, route }) {
   const [avecPiscine, setAvecPiscine] = useState("");
 
   const dispatch = useDispatch();
-  const isLoggedIn = useSelector((state) => state.auth);
+  const {isLoggedIn, userId} = useSelector((state) => state.auth);
 
-  // useEffect(() => {
-  //   if (!isLoggedIn) {
-  //     navigation.navigate("Login");
-  //   }
-  // }, [isLoggedIn, navigation]);
+  useEffect(() => {
+    if (!isLoggedIn) {
+      navigation.navigate("Login");
+    }
+  }, [isLoggedIn, navigation]);
 
   const handleSubmit = async () => {
     const formData = new FormData();
@@ -59,6 +59,8 @@ export default function AddPropertyDetailsScreen({ navigation, route }) {
         type: "image/jpeg",
       });
     });
+
+    formData.append("user", userId);
   
     // Create property details
     const propertyDetails = {
@@ -91,11 +93,13 @@ export default function AddPropertyDetailsScreen({ navigation, route }) {
     Object.keys(propertyDetails).forEach((key) => {
       formData.append(`property[${key}]`, propertyDetails[key]);
     });
+
+    console.log("Form Data:", formData);
   
     try {
-      const response = dispatch(addAnnonce(formData));
+      const response = await dispatch(addAnnonce(formData));
       if (response.success) {
-        navigation.navigate("ListAnnonces");
+        navigation.navigate("Home");
       } else {
         console.error("Failed to add annonce:", response.error);
       }
