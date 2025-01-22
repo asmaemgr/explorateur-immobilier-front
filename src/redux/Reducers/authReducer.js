@@ -62,6 +62,11 @@ export const authReducer = (state = initialState, action) => {
         userId: null,
         error: null,
       };
+    case "CLEAR_ERROR":
+      return {
+        ...state,
+        error: null,
+      };
     default:
       return state;
   }

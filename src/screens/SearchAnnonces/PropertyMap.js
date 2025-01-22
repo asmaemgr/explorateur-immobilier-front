@@ -1,11 +1,16 @@
 import React from "react";
 import { View, StyleSheet, Image } from "react-native";
-import MapView, { Marker } from "react-native-maps";
+import MapboxGL from "@rnmapbox/maps";
 
 // Import custom marker images
-import maisonMarker from "../../../assets/maison-marker.png";
-import villaMarker from "../../../assets/villa-marker.png";
+// import maisonMarker from "../../../assets/maison-marker.png";
+// import villaMarker from "../../../assets/villa-marker.png";
 import apartmentMarker from "../../../assets/apartment-marker.png";
+import { token } from "../../../token";
+
+
+// Set Mapbox access token
+MapboxGL.setAccessToken(token.MAPBOX_API_KEY);
 
 const PropertyMap = ({ route }) => {
   const { longitude, latitude, type, description } = route.params;
@@ -13,31 +18,30 @@ const PropertyMap = ({ route }) => {
   // Function to get the custom marker icon based on property type
   const getMarkerIcon = (type) => {
     switch (type) {
-      case "Villa":
-        return villaMarker;
+      // case "Villa":
+      //   return villaMarker;
       case "Appartement":
         return apartmentMarker;
-      case "Maison":
-        return maisonMarker;
+      // case "Maison":
+      //   return maisonMarker;
       default:
         return apartmentMarker; // Default icon
     }
   };
 
-  const markerCoordinate = React.useMemo(() => ({ latitude, longitude }), [latitude, longitude]);
-
   return (
     <View style={styles.container}>
-      <MapView
-        style={styles.map}
-        initialRegion={{
-          latitude: latitude,
-          longitude: longitude,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        }}
-      >
-        <Marker coordinate={markerCoordinate} title={type} description={description}>
+      <MapboxGL.MapView style={styles.map}>
+        <MapboxGL.Camera
+          centerCoordinate={[longitude, latitude]}
+          zoomLevel={14}
+        />
+        <MapboxGL.PointAnnotation
+          id="marker"
+          coordinate={[longitude, latitude]}
+          title={type}
+          snippet={description}
+        >
           <View style={styles.markerWrapper}>
             <View style={styles.markerShape}>
               <View style={styles.markerInner}>
@@ -50,8 +54,8 @@ const PropertyMap = ({ route }) => {
               <View style={styles.markerTail} />
             </View>
           </View>
-        </Marker>
-      </MapView>
+        </MapboxGL.PointAnnotation>
+      </MapboxGL.MapView>
     </View>
   );
 };
@@ -87,7 +91,7 @@ const styles = StyleSheet.create({
     borderLeftWidth: 10,
     borderRightWidth: 10,
     borderTopWidth: 15,
-    borderStyle: 'solid',
+    borderStyle: "solid",
     borderLeftColor: "transparent",
     borderRightColor: "transparent",
     borderTopColor: "#4CAF50", // Same green color as markerInner

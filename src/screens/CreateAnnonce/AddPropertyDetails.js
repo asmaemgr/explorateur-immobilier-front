@@ -28,12 +28,12 @@ export default function AddPropertyDetailsScreen({ navigation, route }) {
     mesureCO2,
   } = route.params;
   const [etage, setEtage] = useState("");
-  const [avecAscenceur, setAscenceur] = useState("");
+  const [avecAscenceur, setAscenceur] = useState(false);
   const [nbEtages, setNbEtages] = useState("");
-  const [avecGarage, setAvecGarage] = useState("");
-  const [avecSousSol, setAvecSousSol] = useState("");
+  const [avecGarage, setAvecGarage] = useState(false);
+  const [avecSousSol, setAvecSousSol] = useState(false);
   const [surfaceJardin, setSurfaceJardin] = useState("");
-  const [avecPiscine, setAvecPiscine] = useState("");
+  const [avecPiscine, setAvecPiscine] = useState(false);
 
   const dispatch = useDispatch();
   const {isLoggedIn, userId} = useSelector((state) => state.auth);

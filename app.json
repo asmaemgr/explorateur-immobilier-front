@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "my-new-project",
+    "name": "exploimmobilier",
     "slug": "my-new-project",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -24,6 +24,20 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
-  }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "295b501f-278f-4121-8291-bae4560d118a"
+      }
+    },
+    "owner": "asmae03"
+  },
+  "plugins": [
+      [
+        "@rnmapbox/maps",
+        {
+          "RNMapboxMapsDownloadToken": "sk.eyJ1IjoiYXNtYWUwMyIsImEiOiJjbTV6cGFtYjkwNmE5MmlzY2p2Z2V3YWplIn0.zAPYMKXAXBjBQ11GImjd8A"
+        }
+      ]
+    ]
 }

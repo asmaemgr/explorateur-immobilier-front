@@ -10,10 +10,10 @@ import {
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { useDispatch, useSelector } from "react-redux";
-import { viewAnnonce } from "../../redux/Actions/annonceActions";
+import { viewFavAnnonces } from "../../redux/Actions/annonceActions";
 import config from "../../config";
 
-const ListAnnonces = ({ navigation }) => {
+const ListFavAnnonces = ({ navigation }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState({ type: "", prix: "", superficie: "" });
   const [filteredAnnonces, setFilteredAnnonces] = useState([]); // Holds filtered data
@@ -28,9 +28,9 @@ const ListAnnonces = ({ navigation }) => {
       return;
     }
     const unsubscribe = navigation.addListener('focus', () => {
-      dispatch(viewAnnonce());
-    });
-    return unsubscribe;
+          dispatch(viewFavAnnonces());
+        });
+        return unsubscribe;
   }, [isLoggedIn, navigation, dispatch]);
 
   useEffect(() => {
@@ -171,7 +171,7 @@ const ListAnnonces = ({ navigation }) => {
   );
 };
 
-export default ListAnnonces;
+export default ListFavAnnonces;
 
 
 const styles = StyleSheet.create({

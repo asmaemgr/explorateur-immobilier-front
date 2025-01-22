@@ -15,22 +15,23 @@ export const LOGOUT = 'LOGOUT';
 
 
 // Action creator pour le login
-export const login = (username, password) => {
+export const login = (email, password) => {
   return async (dispatch) => {
     dispatch({ type: LOGIN_REQUEST });
     const apiUrl = `${config.BASE_URL}/authent/login`;
 
     try {
-      const response = await axios.post(apiUrl, { username, password });
+      const response = await axios.post(apiUrl, { email, password });
 
       if (response.data && response.data.access_token) {
         const decodedToken = JSON.parse(atob(response.data.access_token.split('.')[1]));
         const userId = decodedToken.sub;
+
         dispatch({
           type: LOGIN_SUCCESS,
           payload: {
             token: response.data.access_token,
-            id: userId
+            id: userId,
           },
         });
       } else {
@@ -40,7 +41,6 @@ export const login = (username, password) => {
         });
       }
     } catch (error) {
-      console.error('Error:', error);
       dispatch({
         type: LOGIN_FAILURE,
         payload: error.response?.data?.message || 'Erreur lors de la connexion',
@@ -48,6 +48,7 @@ export const login = (username, password) => {
     }
   };
 };
+
 
 export const register = (userData) => {
   return async (dispatch) => {
@@ -57,10 +58,15 @@ export const register = (userData) => {
     try {
       const response = await axios.post(apiUrl, userData);
 
-      if (response.data) {
+      if (response.data && response.data.access_token) {
+        const decodedToken = JSON.parse(atob(response.data.access_token.split('.')[1]));
+        const userId = decodedToken.sub;
         dispatch({
           type: REGISTER_SUCCESS,
-          payload: response.data.message || 'Inscription réussie !',
+          payload: {
+            token: response.data.access_token,
+            id: userId
+          },
         });
       } else {
         dispatch({
@@ -87,5 +93,11 @@ export const logout = () => {
     } catch (error) {
       console.error('Erreur lors du logout:', error);
     }
+  };
+};
+
+export const clearError = () => {
+  return async (dispatch) => {
+    dispatch({ type: 'CLEAR_ERROR' });
   };
 };

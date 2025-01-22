@@ -24,12 +24,18 @@ export default function LoginScreen({ navigation }) {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(String(email).toLowerCase());
   };
-
+ 
   useEffect(() => {
     if (!isLoading && isLoggedIn) {
       navigation.navigate("Home");
-    } else if (!isLoading && error) {
-      Alert.alert("Erreur", error);
+    }
+    if (error) {
+      Alert.alert("Erreur", error, [
+      {
+        text: "OK",
+        onPress: () => dispatch({ type: "CLEAR_ERROR" }),
+      },
+      ]);
     }
 
     if (email && !validateEmail(email)) {
@@ -48,7 +54,7 @@ export default function LoginScreen({ navigation }) {
       return;
     }
     dispatch(login(email, password)).then((response) => {
-      if (response.type === "LOGIN_SUCCESS") {
+      if(response.type === "LOGIN_SUCCESS") {
         navigation.navigate("Home");
       }
     });

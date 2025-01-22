@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { useDispatch, useSelector } from "react-redux";
-import { viewAnnonce } from "../../redux/Actions/annonceActions";
+import { viewMyAnnonces } from "../../redux/Actions/annonceActions";
 import config from "../../config";
 
 const ListAnnonces = ({ navigation }) => {
@@ -27,11 +27,12 @@ const ListAnnonces = ({ navigation }) => {
       navigation.navigate("Login");
       return;
     }
-    const unsubscribe = navigation.addListener('focus', () => {
-      dispatch(viewAnnonce());
+    const unsubscribe = navigation.addListener("focus", () => {
+      dispatch(viewMyAnnonces());
     });
     return unsubscribe;
   }, [isLoggedIn, navigation, dispatch]);
+
 
   useEffect(() => {
     setOriginalAnnonces(annoncesData); // Update original data
@@ -45,15 +46,14 @@ const ListAnnonces = ({ navigation }) => {
 
   const handleSearch = () => {
     const filtered = originalAnnonces.filter((annonce) => {
-      const matchesSearch = annonce.description
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
+      const matchesSearch =
+        annonce.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
         annonce.property.ville
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
         annonce.property.adresse
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase());
 
       const matchesType = filter.type
         ? annonce.property.type === filter.type
@@ -153,12 +153,10 @@ const ListAnnonces = ({ navigation }) => {
                 <TouchableOpacity
                   style={styles.detailsButton}
                   onPress={() =>
-                    navigation.navigate("DetailsAnnonce", { annonce })
+                    navigation.navigate("CreatedDetailsAnnonce", { annonce })
                   }
                 >
-                  <Text style={styles.detailsButtonText}>
-                    Voir les détails
-                  </Text>
+                  <Text style={styles.detailsButtonText}>Voir les détails</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -172,7 +170,6 @@ const ListAnnonces = ({ navigation }) => {
 };
 
 export default ListAnnonces;
-
 
 const styles = StyleSheet.create({
   container: {

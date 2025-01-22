@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -13,32 +13,15 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import config from "../../config";
-import { useDispatch } from "react-redux";
-import { toggleFavoriteAnnonce, isFavoriteAnnonce } from "../../redux/Actions/annonceActions";
+import { useDispatch, useSelector } from "react-redux";
+import { deleteAnnonceById } from "../../redux/Actions/annonceActions";
 
-const DetailsAnnonce = ({ navigation, route }) => {
+const CreatedDetailsAnnonce = ({ navigation, route }) => {
   const { annonce } = route.params;
+  const [modalDeleteVisible, setModalDeleteVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [isFavorite, setIsFavorite] = useState(false);
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    // Check if the current annonce is in the favorites list
-    checkFavorite();
-  }, [dispatch, annonce.id]);
-
-  async function checkFavorite() {
-    const response = await dispatch(isFavoriteAnnonce(annonce.id));
-    setIsFavorite(response.data); 
-  }
-
-  const toggleFavorite = () => {
-    dispatch(toggleFavoriteAnnonce(annonce.id, !isFavorite));
-    setIsFavorite(!isFavorite);
-    const message = isFavorite ? "Annonce retirée des favoris" : "Annonce ajoutée aux favoris";
-    alert(message);
-  };
 
   const openModal = (image) => {
     setSelectedImage(image);
@@ -75,7 +58,7 @@ const DetailsAnnonce = ({ navigation, route }) => {
             </Text>
           </>
         );
-      case "Appartement":
+      case "Apartment":
         return (
           <>
             <Text style={styles.detail}>
@@ -109,13 +92,11 @@ const DetailsAnnonce = ({ navigation, route }) => {
     }
   };
 
-  const openMap = (longitude, latitude, type, description) => {
-    navigation.navigate("PropertyMap", {
-      longitude: -7.390833,
-      latitude: 33.698431,
-      type,
-      description,
-    });
+  const deleteAnnonce = () => {
+    setModalDeleteVisible(false);
+    dispatch(deleteAnnonceById(annonce.id));
+    alert("Annonce supprimée avec succès !");
+    navigation.navigate("Home");
   };
 
   return (
@@ -172,36 +153,20 @@ const DetailsAnnonce = ({ navigation, route }) => {
         </View>
       </ScrollView>
 
-      {/* Floating Favorite Button */}
+      {/* Floating Delete Button */}
       <TouchableOpacity
-        style={[
-          styles.favoriteButton,
-          isFavorite && styles.favoriteButtonActive,
-        ]}
-        onPress={toggleFavorite}
+        style={[styles.deleteButton]}
+        onPress={() => setModalDeleteVisible(true)}
       >
-        <Icon
-          name={isFavorite ? "favorite" : "favorite-border"}
-          size={28}
-          color="#FFFFFF"
-        />
+        <Icon name="delete" size={28} color="#FFFFFF" />
       </TouchableOpacity>
 
+      {/* Floating Edit Button */}
       <TouchableOpacity
-        style={styles.messButton}
-        onPress={() => navigation.navigate("MessagerieAnnonce")}
+        style={styles.editButton}
+        onPress={() => navigation.navigate("EditAnnonce", { annonce })}
       >
-        <Text style={{ color: "#000000" }}>Messagerie</Text>
-      </TouchableOpacity>
-
-      {/* Floating Map Button */}
-      <TouchableOpacity
-        style={styles.mapButton}
-        onPress={() =>
-          openMap(annonce.property.logitude, annonce.property.latitude)
-        }
-      >
-        <Icon name="map" size={28} color="#FFFFFF" />
+        <Icon name="edit" size={28} color="#FFFFFF" />
       </TouchableOpacity>
 
       {/* Modal for Enlarged Image */}
@@ -221,6 +186,44 @@ const DetailsAnnonce = ({ navigation, route }) => {
                   }}
                   style={styles.modalImage}
                 />
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
+
+      {/* Modal for Delete Confirmation */}
+      <Modal
+        visible={modalDeleteVisible}
+        animationType="fade"
+        transparent={true}
+      >
+        <TouchableWithoutFeedback onPress={() => setModalDeleteVisible(false)}>
+          <View style={styles.modalDeleteOverlay}>
+            <TouchableWithoutFeedback>
+              <View style={styles.modalDeleteContent}>
+                <Text style={styles.title}>Confirmer la suppression ?</Text>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-around",
+                  }}
+                >
+                  <TouchableOpacity
+                    style={[
+                      styles.annulDeleteButton,
+                    ]}
+                    onPress={() => setModalDeleteVisible(false)}
+                  >
+                    <Text style={{ color: "#FFFFFF" }}>Annuler</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.confirmDeleteButton}
+                    onPress={deleteAnnonce}
+                  >
+                    <Text style={{ color: "#FFFFFF" }}>Confirmer</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </TouchableWithoutFeedback>
           </View>
@@ -285,7 +288,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#2C3E50",
   },
-  mapButton: {
+  editButton: {
     position: "absolute",
     bottom: 20,
     right: 20,
@@ -317,7 +320,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 5,
     elevation: 6,
-    },
+  },
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent black overlay
@@ -336,7 +339,7 @@ const styles = StyleSheet.create({
     height: "100%",
     resizeMode: "contain",
   },
-  favoriteButton: {
+  deleteButton: {
     position: "absolute",
     bottom: 20,
     left: 20,
@@ -352,10 +355,30 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 6,
   },
-  favoriteButtonActive: {
-    // gray color for active state
-    backgroundColor: "#9E9E9E",
+  modalDeleteOverlay: {
+    flex: 1,
+    // Semi-transparent black overlay
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalDeleteContent: {
+    backgroundColor: "#FFFFFF",
+    padding: 20,
+    borderRadius: 10,
+    width: Dimensions.get("window").width - 40,
+  },
+  annulDeleteButton: {
+    padding: 10,
+    borderRadius: 10,
+    backgroundColor: "gray", // Changed to gray
+  },
+  confirmDeleteButton: {
+    padding: 10,
+    borderRadius: 10,
+    backgroundColor: "#F44336", // Vibrant red for visibility
+
   },
 });
 
-export default DetailsAnnonce;
+export default CreatedDetailsAnnonce;
