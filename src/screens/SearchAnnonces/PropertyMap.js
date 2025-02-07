@@ -1,16 +1,11 @@
 import React from "react";
 import { View, StyleSheet, Image } from "react-native";
-import MapboxGL from "@rnmapbox/maps";
+import MapView, { Marker } from "react-native-maps";
 
 // Import custom marker images
 // import maisonMarker from "../../../assets/maison-marker.png";
 // import villaMarker from "../../../assets/villa-marker.png";
 import apartmentMarker from "../../../assets/apartment-marker.png";
-import { token } from "../../../token";
-
-
-// Set Mapbox access token
-MapboxGL.setAccessToken(token.MAPBOX_API_KEY);
 
 const PropertyMap = ({ route }) => {
   const { longitude, latitude, type, description } = route.params;
@@ -29,19 +24,20 @@ const PropertyMap = ({ route }) => {
     }
   };
 
+  const markerCoordinate = React.useMemo(() => ({ latitude, longitude }), [latitude, longitude]);
+
   return (
     <View style={styles.container}>
-      <MapboxGL.MapView style={styles.map}>
-        <MapboxGL.Camera
-          centerCoordinate={[longitude, latitude]}
-          zoomLevel={14}
-        />
-        <MapboxGL.PointAnnotation
-          id="marker"
-          coordinate={[longitude, latitude]}
-          title={type}
-          snippet={description}
-        >
+      <MapView
+        style={styles.map}
+        initialRegion={{
+          latitude: latitude,
+          longitude: longitude,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        }}
+      >
+        <Marker coordinate={markerCoordinate} title={type} description={description}>
           <View style={styles.markerWrapper}>
             <View style={styles.markerShape}>
               <View style={styles.markerInner}>
@@ -54,8 +50,8 @@ const PropertyMap = ({ route }) => {
               <View style={styles.markerTail} />
             </View>
           </View>
-        </MapboxGL.PointAnnotation>
-      </MapboxGL.MapView>
+        </Marker>
+      </MapView>
     </View>
   );
 };
@@ -91,7 +87,7 @@ const styles = StyleSheet.create({
     borderLeftWidth: 10,
     borderRightWidth: 10,
     borderTopWidth: 15,
-    borderStyle: "solid",
+    borderStyle: 'solid',
     borderLeftColor: "transparent",
     borderRightColor: "transparent",
     borderTopColor: "#4CAF50", // Same green color as markerInner
