@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "151905584297",
+    "project_id": "exploimmobilier",
+    "storage_bucket": "exploimmobilier.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:151905584297:android:2df88b60e55b50d7add5b8",
+        "android_client_info": {
+          "package_name": "com.anonymous.mynewproject"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_OtcAZSx_AM8GSOVnZcf_A4qxfp3GS6g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

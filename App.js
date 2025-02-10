@@ -24,35 +24,38 @@ export default function App() {
 
     requestPermission();
 
-    // Get and store FCM token
+    // Function to get and store FCM token
     const getToken = async () => {
       try {
         const token = await messaging().getToken();
         if (!token) {
-          console.log("⚠️ FCM Token is null");
+          console.log("⚠️ No FCM Token retrieved!");
           return;
         }
 
-        console.log("🔥 FCM Token:", token);
+        console.log("🔥 New FCM Token:", token);
 
         // Get userId from Redux
         const state = store.getState();
         const userId = state.auth?.userId;
 
         if (!userId) {
-          console.error("⚠️ User ID not found in Redux store");
+          console.log("⚠️ User ID not found in Redux store");
           return;
         }
 
-        // Send token to backend
-        const response = await fetch(`${config.BASE_URL}/users/update-token`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userId, fcmToken: token }),
-        });
+        // Store token locally (optional: to avoid unnecessary API calls)
+        const storedToken = state.auth?.fcmToken;
+        if (storedToken !== token) {
+          // Send new token to backend
+          await fetch(`${config.BASE_URL}/users/update-token`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId, fcmToken: token }),
+          });
 
-        const data = await response.json();
-        console.log("✅ Token stored:", data);
+          console.log("✅ Token updated on backend");
+        }
       } catch (error) {
         console.error("❌ Error storing token:", error);
       }
@@ -63,7 +66,7 @@ export default function App() {
     // Handle token refresh
     const unsubscribeTokenRefresh = messaging().onTokenRefresh(async newToken => {
       console.log("🔄 FCM Token refreshed:", newToken);
-      await getToken(); // Update backend with new token
+      await getToken();
     });
 
     // Listen for foreground notifications
@@ -71,7 +74,7 @@ export default function App() {
       console.log("📩 Notification received in foreground:", remoteMessage);
 
       // Show notification in foreground (custom UI)
-      alert(`📩 ${remoteMessage.notification.title}: ${remoteMessage.notification.body}`);
+      alert(`📩 ${remoteMessage.notification?.title}: ${remoteMessage.notification?.body}`);
     });
 
     // Handle notification when app is opened from background
